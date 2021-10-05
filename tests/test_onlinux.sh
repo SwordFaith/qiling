@@ -14,4 +14,4 @@ python3 ./test_edl.py &&
 python3 ./test_qnx.py && 
 python3 ./test_android.py &&
 python3 ./test_mcu.py &&
-test -f. ./test_evm.py && python3 ./test_evm.py
+test -f ./test_evm.py && python3 ./test_evm.py
