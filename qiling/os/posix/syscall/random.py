@@ -14,7 +14,7 @@ def ql_syscall_getrandom(ql: Qiling, buf: int, buflen: int, flags: int):
     except:
         retval = -1
     else:
-        ql.log.debug(f'getrandom() CONTENT: {data.hex(" ")}')
+        ql.log.debug(f'getrandom() CONTENT: {" ".join(map(lambda x: f"{x:x}", data))}')
         retval = len(data)
 
     return retval
