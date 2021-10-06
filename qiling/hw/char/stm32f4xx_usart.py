@@ -3,10 +3,8 @@
 # Cross Platform and Multi Architecture Advanced Binary Emulation Framework
 #
 
-import time
 import ctypes
 
-from qiling.hw.utils.serial import QlSerial
 from qiling.hw.peripheral import QlPeripheral
 from qiling.hw.const.stm32f4xx_usart import USART_SR, USART_CR1
 
