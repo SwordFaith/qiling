@@ -5,7 +5,6 @@
 
 import time
 import ctypes
-import serial
 
 from qiling.hw.utils.serial import QlSerial
 from qiling.hw.peripheral import QlPeripheral
@@ -108,27 +107,3 @@ class STM32F4xxUsart(QlPeripheral):
                 (self.usart.CR1 & USART_CR1.RXNEIE and self.usart.SR & USART_SR.RXNE) or \
                 (self.usart.CR1 & USART_CR1.IDLEIE and self.usart.SR & USART_SR.IDLE):
                 self.ql.hw.nvic.set_pending(self.intn)
-
-    def open_serial(self):
-        def read_daemon(port):
-            s = serial.Serial(port)
-            while True:
-                buf = s.read_all()
-                if buf:
-                    self.recv_buf += buf
-                time.sleep(0.5)
-
-        def write_daemon(port):
-            s = serial.Serial(port)
-            while True:
-                if self.send_buf:
-                    s.write(self.send_buf)
-                    self.send_buf.clear()
-                time.sleep(0.5)
-
-        self.serial = QlSerial(self.ql, read_daemon=read_daemon, write_daemon=write_daemon)
-
-        self.ql.log.info(f'[{self.label}] User port {self.serial.port_y}')
-        
-        self.serial.start()
-        return self.serial.port_y
