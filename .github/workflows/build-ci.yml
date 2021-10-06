@@ -93,7 +93,7 @@ jobs:
         fi
         
         if [ ${{ matrix.os }} == 'ubuntu-20.04' ]; then
-          docker run -it --rm -v ${GITHUB_WORKSPACE}:/qiling qilingframework/qiling:lastest bash -c "rm -rf tests/test_evm.py && cd tests && ./test_onlinux.sh"
+          docker run -it --rm -v ${GITHUB_WORKSPACE}:/qiling qilingframework/qiling:latest bash -c "rm -rf tests/test_evm.py && cd tests && ./test_onlinux.sh"
         else
           pip3 install setuptools wheel
           cd tests && ./test_onlinux.sh
