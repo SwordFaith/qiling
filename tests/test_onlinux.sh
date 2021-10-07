@@ -4,6 +4,10 @@
 # Cross Platform and Multi Architecture Advanced Binary Emulation Framework
 #
 
+if [ -f  ./test_evm.py ]; then
+    python3 ./test_evm.py && echo "Done EVM test"
+fi 
+
 python3 ./test_posix.py && 
 python3 ./test_elf_multithread.py &&
 python3 ./test_elf_ko.py &&
@@ -13,5 +17,4 @@ python3 ./test_shellcode.py &&
 python3 ./test_edl.py &&
 python3 ./test_qnx.py && 
 python3 ./test_android.py &&
-python3 ./test_mcu.py &&
-[ -f "./test_evm.py" ] && python3 ./test_evm.py || return 0
+python3 ./test_mcu.py
