@@ -5,7 +5,6 @@
 #
 
 if [ -f  ./test_evm.py ]; then
-    python3 ./test_evm.py && echo "Done EVM test"
 fi 
 
 python3 ./test_posix.py && 
@@ -17,4 +16,6 @@ python3 ./test_shellcode.py &&
 python3 ./test_edl.py &&
 python3 ./test_qnx.py && 
 python3 ./test_android.py &&
-python3 ./test_mcu.py
+python3 ./test_mcu.py &&
+python3 ./test_evm.py &&
+echo "Done Test"
