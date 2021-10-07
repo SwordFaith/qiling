@@ -71,4 +71,4 @@ class EVMTest(unittest.TestCase):
         self.assertTrue(testcheck.visited_hookinsn)
 
 if __name__ == "__main__":
-    unittest.mai()
+    unittest.main()
