@@ -72,7 +72,6 @@ class QlLoaderELF(QlLoader):
             self.ql.mem.write(self.ql.os.entry_point, self.ql.code)
             self.ql.reg.arch_sp = self.ql.os.entry_point
             return
-<<<<<<< HEAD
 
         section = {
             32 : 'OS32',
@@ -98,113 +97,11 @@ class QlLoaderELF(QlLoader):
         if elftype == 'ET_REL':
             self.load_driver(elffile, stack_address + stack_size)
             self.ql.hook_code(hook_kernel_api)
-
-        # is it an executable or shared object?
-        elif elftype == 'ET_EXEC' or elftype == 'ET_DYN':
-            self.load_with_ld(elffile, stack_address + stack_size, argv=self.argv, env=self.env)
-
-        else:
-            raise QlErrorELFFormat(f'unexpected elf type value (e_type = {elffile["e_type"]})')
-
-        self.is_driver = (elftype == 'ET_REL')
-
-        self.ql.reg.arch_sp = self.stack_address
-
-        # No idea why.
-        if self.ql.ostype == QL_OS.FREEBSD:
-            # self.ql.reg.rbp = self.stack_address + 0x40
-            self.ql.reg.rdi = self.stack_address
-            self.ql.reg.r14 = self.stack_address
-
-    @staticmethod
-    def seg_perm_to_uc_prot(perm: int) -> int:
-        """Translate ELF segment perms to Unicorn protection constants.
-        """
-
-        prot = UC_PROT_NONE
-
-        if perm & P_FLAGS.PF_X:
-            prot |= UC_PROT_EXEC
-
-        if perm & P_FLAGS.PF_W:
-            prot |= UC_PROT_WRITE
-
-        if perm & P_FLAGS.PF_R:
-            prot |= UC_PROT_READ
-=======
-
-        section = {
-            32 : 'OS32',
-            64 : 'OS64'
-        }[self.ql.archbit]
-
-        self.profile = self.ql.os.profile[section]
-
-        # setup program stack
-        stack_address = int(self.profile.get('stack_address'), 0)
-        stack_size = int(self.profile.get('stack_size'), 0)
-        self.ql.mem.map(stack_address, stack_size, info='[stack]')
-
-        self.path = self.ql.path
-
-        with open(self.path, 'rb') as infile:
-            fstream = io.BytesIO(infile.read())
-
-        elffile = ELFFile(fstream)
-        elftype = elffile['e_type']
-
-        # is it a driver?
-        if elftype == 'ET_REL':
-            self.load_driver(elffile, stack_address + stack_size)
-            self.ql.hook_code(hook_kernel_api)
->>>>>>> dev
 
         # is it an executable?
         elif elftype == 'ET_EXEC':
             load_address = 0
 
-<<<<<<< HEAD
-    @staticmethod
-    def align(value: int, alignment: int) -> int:
-        """Align a value down to the specified alignment boundary. If `value` is already
-        aligned, the same value is returned. Commonly used to determine the base address
-        of the enclosing page.
-
-        Args:
-            value: numberic value to align
-            alignment: alignment boundary; must be a power of 2
-
-        Returns:
-            Value aligned down to boundary
-        """
-
-        return value & ~(alignment - 1)
-
-    @staticmethod
-    def align_up(value: int, alignment: int) -> int:
-        """Align a value up to the specified alignment boundary. If `value` is already
-        aligned, the same value is returned. Commonly used to determine the end address
-        of the enlosing page.
-
-        Args:
-            value: numberic value to align
-            alignment: alignment boundary; must be a power of 2
-
-        Returns:
-            Value aligned up to boundary
-        """
-
-        return (value + alignment - 1) & ~(alignment - 1)
-
-    def load_with_ld(self, elffile: ELFFile, stack_addr: int, load_address: int = None, argv: Sequence[str] = [], env: Mapping[str, str] = {}):
-        if load_address is None:
-            load_address = int(self.profile.get('load_address'), 0)
-
-        # correct the load address if needed
-        if elffile['e_type'] == 'ET_EXEC':
-            load_address = 0
-
-=======
             self.load_with_ld(elffile, stack_address + stack_size, load_address, self.argv, self.env)
 
         # is it a shared object?
@@ -277,7 +174,6 @@ class QlLoaderELF(QlLoader):
         return (value + alignment - 1) & ~(alignment - 1)
 
     def load_with_ld(self, elffile: ELFFile, stack_addr: int, load_address: int, argv: Sequence[str] = [], env: Mapping[str, str] = {}):
->>>>>>> dev
         pagesize = 0x1000
 
         # get list of loadable segments; these segments will be loaded to memory
@@ -314,8 +210,6 @@ class QlLoaderELF(QlLoader):
 
                 # overlapping segments? something probably went wrong
                 elif lbound < prev_ubound:
-<<<<<<< HEAD
-=======
                     # EDL ELF files use 0x400 bytes pages, which might make some segments look as if they
                     # start at the same segment as their predecessor. though that is fixable, unicorn
                     # supports only 0x1000 bytes pages; this becomes problematic when using mem.protect
@@ -326,7 +220,6 @@ class QlLoaderELF(QlLoader):
                         load_regions[-1] = (prev_lbound, ubound, prev_perms | perms)
                         continue
 
->>>>>>> dev
                     raise RuntimeError
 
             else:
@@ -377,7 +270,6 @@ class QlLoaderELF(QlLoader):
                 # determine interpreter base address
                 interp_address = int(self.profile.get('interp_address'), 0)
                 self.ql.log.debug(f'Interpreter addr: {interp_address:#x}')
-<<<<<<< HEAD
 
                 interp_seg_pt_load = tuple(seg for seg in interp.iter_segments() if seg['p_type'] == 'PT_LOAD')
 
@@ -386,16 +278,6 @@ class QlLoaderELF(QlLoader):
                 interp_mem_size = QlLoaderELF.align_up(interp_mem_size, pagesize)
                 self.ql.log.debug(f'Interpreter size: {interp_mem_size:#x}')
 
-=======
-
-                interp_seg_pt_load = tuple(seg for seg in interp.iter_segments() if seg['p_type'] == 'PT_LOAD')
-
-                # determine memory size needed for interpreter
-                interp_mem_size = max((seg['p_vaddr'] + seg['p_memsz']) for seg in interp_seg_pt_load)
-                interp_mem_size = QlLoaderELF.align_up(interp_mem_size, pagesize)
-                self.ql.log.debug(f'Interpreter size: {interp_mem_size:#x}')
-
->>>>>>> dev
                 # map memory for interpreter
                 self.ql.mem.map(interp_address, interp_mem_size, info=os.path.abspath(interp_local_path))
 

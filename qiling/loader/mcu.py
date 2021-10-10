@@ -5,12 +5,12 @@
 
 
 import struct
+from elftools.elf.elffile import ELFFile
 
 from qiling.const import *
 from qiling.core import Qiling
 
 from .loader import QlLoader
-from .elf import ELFParse
 
 
 class IhexParser:
@@ -65,7 +65,7 @@ class QlLoaderMCU(QlLoader):
         self.filetype = self.guess_filetype()
 
         if self.filetype == 'elf':
-            self.elf = ELFParse(self.path, self.ql)
+            self.elf = ELFFile(open(self.path, 'rb'))
             
         elif self.filetype == 'bin':
             self.map_address = self.argv[1]
@@ -87,11 +87,11 @@ class QlLoaderMCU(QlLoader):
     
     def reset(self):
         if self.filetype == 'elf':
-            for segment in self.elf.parse_segments():
+            for segment in self.elf.iter_segments():
                 if segment['p_type'] != 'PT_LOAD':
                     continue
 
-                for section in self.elf.parse_sections():
+                for section in self.elf.iter_sections():
                     if segment.section_in_segment(section):
                         self.ql.mem.write(section.header['sh_addr'], section.data())
 
